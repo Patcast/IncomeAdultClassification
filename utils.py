@@ -3,40 +3,8 @@ import numpy as np
 from matplotlib import pyplot
 
 sys.path.append('..')
-from submission import SubmissionBase
 
 
-def displayData(X, example_width=None, figsize=(10, 10)):
-    """
-    Displays 2D data stored in X in a nice grid.
-    """
-    # Compute rows, cols
-    if X.ndim == 2:
-        m, n = X.shape
-    elif X.ndim == 1:
-        n = X.size
-        m = 1
-        X = X[None]  # Promote to a 2 dimensional array
-    else:
-        raise IndexError('Input X should be 1 or 2 dimensional.')
-
-    example_width = example_width or int(np.round(np.sqrt(n)))
-    example_height = n / example_width
-
-    # Compute number of items to display
-    display_rows = int(np.floor(np.sqrt(m)))
-    display_cols = int(np.ceil(m / display_rows))
-
-    fig, ax_array = pyplot.subplots(display_rows, display_cols, figsize=figsize)
-    fig.subplots_adjust(wspace=0.025, hspace=0.025)
-
-    ax_array = [ax_array] if m == 1 else ax_array.ravel()
-
-    for i, ax in enumerate(ax_array):
-        # Display Image
-        h = ax.imshow(X[i].reshape(example_width, example_width, order='F'),
-                      cmap='Greys', extent=[0, 1, 0, 1])
-        ax.axis('off')
 
 
 def predict(Theta1, Theta2, X):
@@ -179,50 +147,5 @@ def sigmoid(z):
     return 1.0 / (1.0 + np.exp(-z))
 
 
-class Grader(SubmissionBase):
-    X = np.reshape(3 * np.sin(np.arange(1, 31)), (3, 10), order='F')
-    Xm = np.reshape(np.sin(np.arange(1, 33)), (16, 2), order='F') / 5
-    ym = np.arange(1, 17) % 4
-    t1 = np.sin(np.reshape(np.arange(1, 25, 2), (4, 3), order='F'))
-    t2 = np.cos(np.reshape(np.arange(1, 41, 2), (4, 5), order='F'))
-    t = np.concatenate([t1.ravel(), t2.ravel()], axis=0)
 
-    def __init__(self):
-        part_names = ['Feedforward and Cost Function',
-                      'Regularized Cost Function',
-                      'Sigmoid Gradient',
-                      'Neural Network Gradient (Backpropagation)',
-                      'Regularized Gradient']
-        part_names_key = ['aAiP2', '8ajiz', 'rXsEO', 'TvZch', 'pfIYT']
-        assignment_key = 'xolSVXukR72JH37bfzo0pg'
-        super().__init__('neural-network-learning', assignment_key, part_names, part_names_key)
-
-    def __iter__(self):
-        for part_id in range(1, 6):
-            try:
-                func = self.functions[part_id]
-
-                # Each part has different expected arguments/different function
-                if part_id == 1:
-                    res = func(self.t, 2, 4, 4, self.Xm, self.ym, 0)[0]
-                elif part_id == 2:
-                    res = func(self.t, 2, 4, 4, self.Xm, self.ym, 1.5)
-                elif part_id == 3:
-                    res = func(self.X, )
-                elif part_id == 4:
-                    J, grad = func(self.t, 2, 4, 4, self.Xm, self.ym, 0)
-                    grad1 = np.reshape(grad[:12], (4, 3))
-                    grad2 = np.reshape(grad[12:], (4, 5))
-                    grad = np.concatenate([grad1.ravel('F'), grad2.ravel('F')])
-                    res = np.hstack([J, grad]).tolist()
-                elif part_id == 5:
-                    J, grad = func(self.t, 2, 4, 4, self.Xm, self.ym, 1.5)
-                    grad1 = np.reshape(grad[:12], (4, 3))
-                    grad2 = np.reshape(grad[12:], (4, 5))
-                    grad = np.concatenate([grad1.ravel('F'), grad2.ravel('F')])
-                    res = np.hstack([J, grad]).tolist()
-                else:
-                    raise KeyError
-                yield part_id, res
-            except KeyError:
-                yield part_id, 0
+                
